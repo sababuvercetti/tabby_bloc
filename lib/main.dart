@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tabby_boc/blocs/counter_cubit.dart';
+import 'package:tabby_boc/blocs/name_cubit.dart';
+import 'package:tabby_boc/page_2.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +14,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CounterCubit(0),
-      child: MaterialApp(
-        theme: ThemeData(primarySwatch: Colors.purple),
-        home: HomePage(),
-      ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context)=>CounterCubit(0)),
+        BlocProvider(create: (context)=>NameCubit('')),
+      ],
+        child: MaterialApp(
+          theme: ThemeData(primarySwatch: Colors.purple),
+          home: const HomePage(),
+        ),
+      
     );
   }
 }
@@ -28,10 +35,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:const Text('Tabby Bloc'),
+        title: const Text('Tabby Bloc'),
       ),
       floatingActionButton: FloatingActionButton(
-        child:const Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () {
           context.read<CounterCubit>().add();
         },
@@ -39,9 +46,23 @@ class HomePage extends StatelessWidget {
       body: BlocBuilder<CounterCubit, int>(
         builder: (context, state) {
           return Center(
-            child: Text(
-              'Button pressed $state times',
-              style:const TextStyle(fontSize: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Button pressed $state times',
+                  style: const TextStyle(fontSize: 24),
+                ),
+                CupertinoButton(
+                  color: Colors.purple,
+                  onPressed: () {
+                    context.read<NameCubit>().saveName('Tabby');
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const Page2()));
+                  },
+                  child: const Text('Go to text'),
+                )
+              ],
             ),
           );
         },
