@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tabby_boc/blocs/counter_cubit.dart';
+import 'package:tabby_boc/blocs/cubit/get_breeds_cubit.dart';
 import 'package:tabby_boc/blocs/name_cubit.dart';
 import 'package:tabby_boc/page_2.dart';
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context)=>CounterCubit(0)),
         BlocProvider(create: (context)=>NameCubit('')),
+        BlocProvider(create: (context) => GetBreedsCubit()..getCatBreeds()),
       ],
         child: MaterialApp(
           theme: ThemeData(primarySwatch: Colors.purple),
