@@ -1,13 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tabby_boc/blocs/counter_cubit.dart';
+import 'package:tabby_boc/blocs/counter_cubit_hydrated.dart';
 import 'package:tabby_boc/blocs/cubit/get_breeds_cubit.dart';
 import 'package:tabby_boc/blocs/name_cubit.dart';
 import 'package:tabby_boc/page_2.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+// Initialize storages
+  var tempDir = await getTemporaryDirectory();
+  var storage = await HydratedStorage.build(storageDirectory: tempDir);
+  HydratedBlocOverrides.runZoned(() => runApp(const MyApp()), storage: storage);
 }
 
 class MyApp extends StatelessWidget {
@@ -17,15 +23,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context)=>CounterCubit(0)),
-        BlocProvider(create: (context)=>NameCubit('')),
+        BlocProvider(create: (context) => CounterCubit(0)),
+        BlocProvider(create: (context) => CounterCubitHydrated(0)),
+        BlocProvider(create: (context) => NameCubit('')),
         BlocProvider(create: (context) => GetBreedsCubit()..getCatBreeds()),
       ],
-        child: MaterialApp(
-          theme: ThemeData(primarySwatch: Colors.purple),
-          home: const HomePage(),
-        ),
-      
+      child: MaterialApp(
+        theme: ThemeData(primarySwatch: Colors.purple),
+        home: const HomePage(),
+      ),
     );
   }
 }
@@ -42,10 +48,10 @@ class HomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          context.read<CounterCubit>().add();
+          context.read<CounterCubitHydrated>().add();
         },
       ),
-      body: BlocBuilder<CounterCubit, int>(
+      body: BlocBuilder<CounterCubitHydrated, int>(
         builder: (context, state) {
           return Center(
             child: Column(
